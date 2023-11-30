@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Phrases</title>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <div class="phrase-box">
+        <header>Random Stuff Jack Said</header>
+        <!-- p element to hold the random phrases -->
+        <p></p>
+
+        <button class="randomizer" type="button">Randomize</button>
+    </div>
+    <script>
+        "use strict";
+
+        // Assign p and button to element 
+        let p = document.querySelector("p");
+        let button = document.querySelector("button");
+
+        // Create array of phrases 
+        let phraseArr = [
+            "Yeah, no, totally -- of course! I promise -- anything! Absolutely, anything for you, please just, GOD, marry me -- I mean, I didn't say that! What's up with you? How are you?",
+            "Yep, we’re carving a path using the tried and tested system called violence.",
+            "The claptrap died, sir. Me. I mean… whatever. Dead, sir.",
+            "He's got big dreams. And I've got student loans.",
+            " Uhhh, just...draw Jack lookin' pretty or somethin'. This is all... REALLY weird to me."
+        ];
+
+        for(let i=0; i < phraseArr.length; i++) {
+            console.log(phraseArr[i]);
+        }
+        
+
+        // Function to choose and display a random quote
+        function displayQuote()
+        {
+            // Get random number
+            let i = Math.floor(Math.random() * phraseArr.length);
+
+            // Change the text within p
+            p.innerHTML = phraseArr[i];
+        }
+
+        // Add listener
+        button.addEventListener("click", displayQuote);
+    </script>
+</body>
+</html>

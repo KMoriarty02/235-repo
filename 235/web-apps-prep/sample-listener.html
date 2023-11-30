@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Events-1</title>
+	<style>
+	body{border:1px solid gray;}
+	p{font-size:2em;}
+	</style>
+</head>
+<body>
+<p>I am a paragraph</p>
+<script>
+  "use strict";
+  let p = document.querySelector("p");
+  
+  // Style A
+  p.onclick = function handleClick(param1, param2) {
+    radomizeStats();
+  }
+
+  // Style B
+  p.onclick = (param1, param2) => {
+    console.log(param1);
+    console.log(param2);
+  };
+
+  // Slicker than B
+  p.onclick = (p1, p2) => console.log(p1);
+  // Even slicker 
+  p.onclick = (p1) => console.log;
+  p.onclick = () => alert("hi");
+  p.onclick = m => console.log(m);
+
+  // Big Difference between functions and () => {}: Closures!
+  let contextVar1 = 1;
+  let contextVar2 = 2;
+
+  function pureFn(pf1, pf2) {
+    // Fn scope
+    console.log(pf1);
+
+    // pF is not aware of whats in here
+    // Does not have access to nf1 until after the funtion is closed
+    function nested(nf1) {
+        // Scope
+    }
+    nested(pf2);
+  }
+  // Call direct to nested without invoking pFn
+  pureFn(contextVar1, contextVar2).nested(pf1);
+
+
+  // Theoretical Semantic Stuff
+  setupListeners();
+  throwMockEvents();
+  mockServerResponseA();
+  //mockServerResponseB();
+  saveFile();
+
+  function par1() {
+    // 
+  }
+
+  function par2() {
+    // Has no idea about par1
+  }
+
+  function allTheParents() {
+    par1();
+    par2();
+    sPar();
+
+    function sPar()
+    {
+        // 
+    }
+  }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+figure {
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+}
+    figure img {
+        width: 100%;
+    }
+header, main, footer {
+    width: 90vw;
+}
+span {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    display: block;
+    font-size: 110%;
+    font-weight: bolder;
+    text-align: center;
+}
+div {
+    text-align: center;
+}
+div span {
+    flex-flow: row wrap;
+}
+.name {
+    flex: 0 1 80px;
+}
+    .name img {
+        max-width: 60%;
+    }
+.aliases {
+    text-align: left;
+}
+
+.tet.long {
+    max-width: 120%;
+}

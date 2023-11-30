@@ -1,0 +1,3 @@
+ErrorDocument 404 /kjm4544/235/error/error.html
+
+DirectoryIndex noterror.html 
