@@ -14,7 +14,7 @@ body {
 
 #content {
     width: 70vw;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.8);
     margin-top: 2rem;
     padding: 30px;
     border-top-right-radius: 10px;
@@ -29,6 +29,15 @@ h3 {
 
 .bio {
     color: grey;
+}
+
+p {
+    background: rgba(211, 211, 211, 0.8);
+    border-radius: 10px;
+    margin-left: 10%;
+    margin-right: 10%;
+    padding: .5rem;
+    color: black;
 }
 
 .navigation {
@@ -72,7 +81,7 @@ h3 {
 
 #showcase {
     width: 70vw;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.8);
     margin-bottom: 2rem;
     padding: 30px;
     border-bottom-left-radius: 10px;

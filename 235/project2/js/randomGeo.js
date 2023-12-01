@@ -16,7 +16,7 @@ let height = positionInfo.height;
 let width = positionInfo.width;
 
 // Move the camera back
-camera.position.z = 60;
+camera.position.z = 80;
 
 // Add a renderer
 const renderer = new THREE.WebGLRenderer();
