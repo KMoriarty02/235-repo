@@ -63,6 +63,12 @@ let paused = true;
 let upgradeChosen = false;
 let pierce = false;
 
+let wasd = false;
+let pointer = false;
+let KEY_W = 87, KEY_A = 65, KEY_S = 83, KEY_D = 68;
+let keyHeld_Down = false, keyHeld_Up = false, keyHeld_Left = false, keyHeld_Right = false;
+let playerSpeedX = 0, playerSpeedY = 0;
+
 // Upgrade array 
 let upgradeArr = [];
 //upX is a placeholder name
@@ -117,7 +123,7 @@ function setup() {
     app.ticker.add(gameLoop);
 	
 	// 9 - Start listening for click events on the canvas
-    app.view.onclick = fireBullet;
+    //app.view.onclick = fireBullet;
 
 	// Now our `startScene` is visible
 	// Clicking the button calls startGame()
@@ -155,7 +161,7 @@ function createLabelsAndButtons() {
     } );
     startLabel2.x = 185;
     startLabel2.y = 300;
-    startScene.addChild(startLabel2);
+    startScene.addChild(startLabel2);    
 
     // 1C - Make start game button 
     let startButton = new PIXI.Text("Dump the clutch");
@@ -164,10 +170,50 @@ function createLabelsAndButtons() {
     startButton.y = sceneHeight - 100;
     startButton.interactive = true;
     startButton.buttonMode = true;
+    startButton.visible = false;
     startButton.on("pointerup", startGame); // startGame function reference
     startButton.on('pointerover', e => e.target.alpha = 0.7);
     startButton.on('pointerout', e => e.currentTarget.alpha = 1.0);
     startScene.addChild(startButton);
+
+    let movementLabel = new PIXI.Text("Choose movement style:");
+    movementLabel.style = buttonStyle;
+    movementLabel.x = 80;
+    movementLabel.y = sceneHeight - 250;
+    startScene.addChild(movementLabel);
+
+
+    let wasdButton = new PIXI.Text("WASD");
+    wasdButton.style = buttonStyle;
+    wasdButton.x = 80;
+    wasdButton.y = sceneHeight - 200;
+    wasdButton.interactive = true;
+    wasdButton.buttonMode = true;
+    wasdButton.on("pointerup", () => { 
+        wasd = true; 
+        pointer = false; 
+        startButton.visible = true
+        app.view.onclick = null; // turn it off just incase
+    });
+    wasdButton.on('pointerover', e => e.target.alpha = 0.7);
+    wasdButton.on('pointerout', e => e.currentTarget.alpha = 1.0);
+    startScene.addChild(wasdButton);
+
+    let pointerButton = new PIXI.Text("Pointer");
+    pointerButton.style = buttonStyle;
+    pointerButton.x = 240;
+    pointerButton.y = sceneHeight - 200;
+    pointerButton.interactive = true;
+    pointerButton.buttonMode = true;
+    pointerButton.on("pointerup", () => {
+        pointer = true;
+        wasd = false; 
+        startButton.visible = true;
+        app.view.onclick = fireBullet;
+    });
+    pointerButton.on('pointerover', e => e.target.alpha = 0.7);
+    pointerButton.on('pointerout', e => e.currentTarget.alpha = 1.0);
+    startScene.addChild(pointerButton);
 
     // 2 - Setup 'gameScene'
     let textStyle = new PIXI.TextStyle( {
@@ -220,9 +266,6 @@ function createLabelsAndButtons() {
     playAgainButton.on('pointerover', e => e.target.alpha = 0.7);
     playAgainButton.on('pointerout', e => e.currentTarget.alpha = 1.0);
     gameOverScene.addChild(playAgainButton);
-
-    // Setup persistant upgrade scene elements 
-
 }
 
 function loadSpriteSheet() {
@@ -261,6 +304,10 @@ function startGame() {
     ship.x = 300;
     ship.y = 550;
     loadLevel();
+    if (wasd) {
+        window.addEventListener('keydown', keyPressed);
+        window.addEventListener('keyup', keyReleased);
+    }
 }
 
 function increaseScoreBy(value) {
@@ -281,19 +328,26 @@ function gameLoop() {
     let deltaTime = 1/app.ticker.FPS;
     if (deltaTime > 1/12) { deltaTime = 1/12; }
 
-    // 2 - Move Ship
-    let mousePosition = app.renderer.plugins.interaction.mouse.global;
-    let amt = 6 * deltaTime;
+    if (pointer) {
+        // 2 - Move Ship
+        let mousePosition = app.renderer.plugins.interaction.mouse.global;
+        let amt = 6 * deltaTime;
 
-    // Lerp the x and y values
-    let newX = lerp(ship.x, mousePosition.x, amt);
-    let newY = lerp(ship.y, mousePosition.y, amt);
+        // Lerp the x and y values
+        let newX = lerp(ship.x, mousePosition.x, amt);
+        let newY = lerp(ship.y, mousePosition.y, amt);
 
-    // keep the ship on the screen 
-    let w2 = ship.width/2;
-    let h2 = ship.height/2;
-    ship.x = clamp(newX, 0 + w2, sceneWidth - w2);
-    ship.y = clamp(newY, 0 + h2, sceneHeight - h2);
+        // keep the ship on the screen 
+        let w2 = ship.width/2;
+        let h2 = ship.height/2;
+        ship.x = clamp(newX, 0 + w2, sceneWidth - w2);
+        ship.y = clamp(newY, 0 + h2, sceneHeight - h2);
+    }
+
+    if (wasd) {
+        wasdMove();
+    }
+
 
     // 3 - Move Circles
     for (let c of circles) {
@@ -420,6 +474,53 @@ function gameLoop() {
     }
 }
 
+// Key Movement Functions
+function keyPressed(e) {
+    if (e.keyCode == KEY_A) { keyHeld_Left = true; }
+    if (e.keyCode == KEY_D) { keyHeld_Right = true; }
+    if (e.keyCode == KEY_W) { keyHeld_Up = true; }
+    if (e.keyCode == KEY_S) { keyHeld_Down = true; }
+    if (e.keyCode == 32) { fireBullet(); }
+
+    e.preventDefault();
+}
+
+function keyReleased(e) {
+    if (e.keyCode == KEY_A) {
+        keyHeld_Left = false;
+        playerSpeedX = 0;
+    }
+    if (e.keyCode == KEY_D) {
+        keyHeld_Right = false;
+        playerSpeedX = 0;
+    }
+    if (e.keyCode == KEY_W) {
+        keyHeld_Up = false;
+        playerSpeedY = 0;
+    }
+    if (e.keyCode == KEY_S) {
+        keyHeld_Down = false;
+        playerSpeedY = 0;
+    }
+}
+
+function wasdMove() {
+    ship.x += playerSpeedX;
+    ship.y += playerSpeedY;
+    if (keyHeld_Left) { playerSpeedX = -6; }
+    if (keyHeld_Right) { playerSpeedX = 6; }
+    if (keyHeld_Up) { playerSpeedY = -6; }
+    if (keyHeld_Down) { playerSpeedY = 6; }
+    // Wrapping 
+    if (ship.y <= 0) {
+        ship.y = sceneHeight - 66;
+    } else if (ship.y >= sceneHeight) { ship.y = 2; }
+
+    if (ship.x <= 0) {
+        ship.x = sceneWidth - 66;
+    } else if (ship.x >= sceneWidth) { ship.x = 2; }
+}
+
 function createCircles(numCircles) {
     for (let i=0; i < numCircles; i++) {
         /*
@@ -521,7 +622,7 @@ function fireBullet(e) {
         else {
             // Create bullet 
             let b = new Bullet(
-                0xffffff,
+                0xEB3B54,
                 ship.x,
                 ship.y
             );
@@ -538,7 +639,7 @@ function fireBullet(e) {
     else {
         // Create bullet 
         let b = new Bullet(
-            0xffffff,
+            0xEB3B54,
             ship.x,
             ship.y
         );
@@ -554,7 +655,7 @@ function splitShot() {
     for (let i=0; i < 4; i++) {
         // Create bullet
         let b = new Bullet(
-            0xffffff,
+            0xEB3B54,
             ship.x + offX,
             ship.y
         );
@@ -577,7 +678,7 @@ function tripleShotMode() {
     {
         // Create bullet
         let b = new Bullet(
-            0xffffff,
+            0xEB3B54,
             ship.x + offX,
             ship.y
         );
@@ -614,7 +715,7 @@ function bulletStorm() {
         offY = getRandomInt(0, 25);
 
         let b = new Bullet(
-            0xffffff,
+            0xEB3B54,
             ship.x + offX,
             ship.y + offY
         );
@@ -676,7 +777,7 @@ function upgradeScreen() {
     // Determine what upgrades to show 
     let upText1, upText2;
     let u1, u2;
-    if (levelNum == 5) {upText1 = "Split shot"; u1 = 0; upText2 = "Triple Shot"; u2 = 5;}
+    if (levelNum == 5) {upText1 = "Split shot"; u1 = 0; upText2 = "Triple Shot"; u2 = 1;}
     if (levelNum == 10) {upText1 = "Big Shot"; u1 = 2; upText2 = "Bullet storm"; u2 = 3;}
     if (levelNum == 15) {upText1 = "Pierce"; u1 = 4; upText2 = "Wave Shot"; u2 = 5;}
 
@@ -708,8 +809,16 @@ function upgradeScreen() {
     upgrade1.interactive = true;
     upgrade1.buttonMode = true;
     upgrade1.on("pointerup", () => {
-        upgradeArr[u1] = true;
-        if (u1 == 4) { pierce = true; }
+        if (u1 == 4) {
+            pierce = true;
+        } else { 
+            // I wasnt having an issue with this till I was, and I dont know 
+            // what I changed to cause it, but this fixes it albiet, this isnt great
+            for (let i = 0; i < upgradeArr.length; i++) {
+                upgradeArr[i] = false;
+            }
+            upgradeArr[u1] = true;
+        }
         backToGame();
     }); // change the bool
     upgrade1.on('pointerover', e => e.target.alpha = 0.7);
@@ -723,6 +832,9 @@ function upgradeScreen() {
     upgrade2.interactive = true;
     upgrade2.buttonMode = true;
     upgrade2.on("pointerup", () => {
+        for (let i = 0; i < upgradeArr.length; i++) {
+            upgradeArr[i] = false;
+        }
         upgradeArr[u2] = true;
         backToGame();
     }); // change the bool
